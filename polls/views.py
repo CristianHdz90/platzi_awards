@@ -3,39 +3,26 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from .models import Question, Choice
+from django.views import generic
 
 
-def index(request):
-    context = {
-        "latest_question_list": Question.objects.all()
-    }
-    return render(
-        request=request,
-        template_name="polls/index.html",
-        context=context
-    )
+class IndexView(generic.ListView):
+    template_name = "polls/index.html"
+    context_object_name = "latest_question_list"
+
+    def get_queryset(self):
+        '''Return the last five published questions'''
+        return Question.objects.order_by("-pub_date")
 
 
-def detail(request, question_id):
-    '''This will show all the information about the question'''
-    question = get_object_or_404(Question, pk=question_id)
-    return render(
-        request=request,
-        template_name="polls/detail.html",
-        context={"question": question}
-    )
+class DetailView(generic.DetailView):
+    model = Question
+    template_name = "polls/detail.html"
 
 
-def results(request, question_id):
-    '''Show the number of votes of one question'''
-    question = get_object_or_404(Question, pk=question_id)
-    return render(
-        request=request,
-        template_name="polls/results.html",
-        context={
-            "question": question
-        }
-    )
+class ResultView(generic.DetailView):
+    model = Question
+    template_name = "polls/results.html"
 
 
 def vote(request, question_id):
