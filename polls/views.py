@@ -5,9 +5,13 @@ from .models import Question, Choice
 
 
 def index(request):
-    response = "Main page of Platzi awards"
-    return HttpResponse(
-        content=json.dumps({"message": response})
+    context = {
+        "latest_question_list": Question.objects.all()
+    }
+    return render(
+        request=request,
+        template_name="polls/index.html",
+        context=context
     )
 
 
